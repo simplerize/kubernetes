@@ -1,0 +1,18 @@
+# Pod with labels and selectors to schedule on specific nodes
+# This example would schedule the myapp only if the node has the label bigmem=true
+# kubectl label node <node-name> bigmem=true
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-nodesel
+  labels:
+    app: myapp-nodesel
+spec:
+  nodeSelector:
+    bigmem: "true"
+  containers:
+    - image: nginx:latest
+      name: main
+      ports: # information purpose only. Pods can bind any ports and communicate
+        - containerPort: 80
+          protocol: TCP

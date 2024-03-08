@@ -1,0 +1,14 @@
+# Simple pod example using the image "nginx"
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+  labels:
+    app: myapp
+spec:
+  containers:
+    - image: nginx:latest
+      name: main
+      ports: # information purpose only. Pods can bind any ports and communicate
+        - containerPort: 80
+          protocol: TCP
