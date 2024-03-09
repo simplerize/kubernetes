@@ -1,0 +1,24 @@
+# Pod example with readiness probe
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-readiness
+  labels:
+    app: myapp-readiness
+spec:
+  containers:
+    - image: nginx:latest
+      name: main
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      readinessProbe:
+        initialDelaySeconds: 5  # initial wait to send the first probe request
+        periodSeconds: 5        # periodic interval for probing
+        timeoutSeconds: 1       # probe request timeout (Default: 1). The app should respond to probe request within N sec
+        successThreshold: 1     # Minimum consecutive successes to consider the app is ready (Default: 1)
+        failureThreshold: 3     # Try N times before considering the app is not ready. Useful to ignore temporary glitch (Default 3)
+        exec:
+          command:              # Pod is ready when the cmd returns the exit code 0
+            - ls
+            - /var/ready
