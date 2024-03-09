@@ -1,0 +1,21 @@
+# Namespace definition
+# You could also use "kubectl create namespace dev"
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+
+---
+
+# Pod example with namespace specification
+# You could also use "kubectl create -f <file> -n dev"
+# kubectl get pods  -n dev
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+  namespace: dev
+spec:
+  containers:
+    - image: nginx:latest
+      name: main
