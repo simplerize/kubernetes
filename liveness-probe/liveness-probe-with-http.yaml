@@ -1,0 +1,18 @@
+# Pod example with liveness probe
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-liveness
+  labels:
+    app: myapp-liveness
+spec:
+  containers:
+    - image: nginx:latest
+      name: main
+      ports: # information purpose only. Pods can bind any ports and communicate
+        - containerPort: 80
+          protocol: TCP
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 80
