@@ -1,0 +1,24 @@
+# Simple ReplicationController example
+# ReplicationController is the foundational resource to run and monitor multiple replicas.
+# ReplicaSet is the advanced version of ReplicationController.
+# K8s recommends to use Deployment resource which is implemented with ReplicaSet and supports
+# the software update. One can directly use ReplicaSet if software update is not required.
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myapp-repctrlr
+spec:
+  replicas: 3
+  selector: # can skip selector to let k8s automatically decide based on the labels provided in pod template.
+    app: myapp-repctrlr
+  template:
+    metadata:
+      labels:
+        app: myapp-repctrlr
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
