@@ -1,0 +1,24 @@
+# Kubernetes ReplicaSet example
+# ReplicaSet manages to run a stable set of replica pods at any time.
+# K8s recommends to use Deployment resource which is implemented with ReplicaSet and supports
+# the software update. One can directly use ReplicaSet if software update is not required.
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-repset
+spec:
+  replicas: 3
+  selector: # can skip selector to let k8s automatically decide based on the labels provided in pod template.
+    matchLabels:
+      app: myapp-repset
+  template:
+    metadata:
+      labels:
+        app: myapp-repset
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
