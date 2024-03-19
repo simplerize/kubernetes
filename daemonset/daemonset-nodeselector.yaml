@@ -1,0 +1,25 @@
+# Kubernetes Daemonset example with node selectors
+# Node selectors allows to schedule pods only on specific nodes
+# This example would schedule the pods only if the node has label 'ssd'
+# Run "kubectl label node <node-name> ssd=true" to apply label 'ssd' to a node
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mydaemon-nodesel
+spec:
+  selector:
+    matchLabels:
+      app: mydaemon-nodesel
+  template:
+    metadata:
+      labels:
+        app: mydaemon-nodesel
+    spec:
+      nodeSelector:
+        ssd: "true"
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
