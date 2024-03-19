@@ -8,7 +8,7 @@ metadata:
   name: myapp-repset
 spec:
   replicas: 3
-  selector: # can skip selector to let k8s automatically decide based on the labels provided in pod template.
+  selector:
     matchLabels:
       app: myapp-repset
   template:
