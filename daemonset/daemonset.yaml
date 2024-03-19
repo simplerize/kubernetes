@@ -1,0 +1,21 @@
+# Kubernetes Daemonset example
+# Deployment manages to run pod replicas on every node like a node daemon.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mydaemon
+spec:
+  selector:
+    matchLabels:
+      app: mydaemon
+  template:
+    metadata:
+      labels:
+        app: mydaemon
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
