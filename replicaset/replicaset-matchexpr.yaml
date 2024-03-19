@@ -1,0 +1,27 @@
+# Kubernetes ReplicaSet example with match expressions
+# Associating replicaset to pods can use expressions to match multiple factors
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-repsetexpr
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In # operator can be 'In', 'NotIn', 'Exists', 'DoesNotExist'
+        values:
+          - myapp-repsetexpr
+      - key: experimental
+        operator: DoesNotExist # label 'experimental' should not exist
+  template:
+    metadata:
+      labels:
+        app: myapp-repsetexpr
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
