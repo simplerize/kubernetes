@@ -1,0 +1,26 @@
+# Kubernetes Daemonset example with ondelete update strategy
+# The update strategy OnDelete will not recreate the pods while updating the container image
+# or any other parameters under the template section. User should delete the existing pod so that
+# the new pod is created with the updated spec. This will be useful perform controlled updates
+# from a separate software update service.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mydaemon-ondeleteupdate
+spec:
+  selector:
+    matchLabels:
+      app: mydaemon-ondeleteupdate
+  updateStrategy:
+    type: OnDelete
+  template:
+    metadata:
+      labels:
+        app: mydaemon-ondeleteupdate
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
