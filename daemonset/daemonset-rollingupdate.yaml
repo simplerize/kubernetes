@@ -1,0 +1,29 @@
+# Kubernetes Daemonset example with rolling update strategy
+# Software update to daemonsets are by default using rolling update strategy. If you update
+# the container image or any parameters under the template section, then all the daemonset pods
+# will be recreated to apply the changes. Rollout is by default handled one after another for
+# every node. This can be controlled via maxUnavailable and maxSurge parameters.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mydaemon-rollingupdate
+spec:
+  selector:
+    matchLabels:
+      app: mydaemon-rollingupdate
+  updateStrategy:
+    type: RollingUpdate   # default strategy for rollout
+    rollingUpdate:
+      maxUnavailable: 1   # Max 1 pod may be unavailable during rollout
+      maxSurge: 0         # No surge is allowed to prevent running multiple daemonset pods on the same node
+  template:
+    metadata:
+      labels:
+        app: mydaemon-rollingupdate
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
