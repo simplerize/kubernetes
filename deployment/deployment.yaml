@@ -1,0 +1,24 @@
+# Kubernetes Deployment example
+# Deployment manages a set of replica pods using ReplicaSet and supports declarative updates.
+# For example, setting a new image would automatically rollout the new image in a controlled
+# manner.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-dep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp-dep
+  template:
+    metadata:
+      labels:
+        app: myapp-dep
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
