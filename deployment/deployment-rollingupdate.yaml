@@ -1,6 +1,6 @@
 # Kubernetes Deployment example with rolling update strategy
 # Deployment manages a set of replica pods using ReplicaSet and supports declarative updates.
-# Software update to daemonsets are by default using the rolling update strategy. If you update
+# Software update to deployments are by default using the rolling update strategy. If you update
 # the container image or any other parameters under the template section, then all the daemonset
 # pods will be recreated to apply the changes. Rollout is by default handled one after another for
 # every node. This can be controlled via maxUnavailable and maxSurge parameters.
