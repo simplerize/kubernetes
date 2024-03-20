@@ -1,0 +1,24 @@
+# Kubernetes Deployment example with recreate update strategy
+# The Recreate update strategy removes all the pods first and starts the rollout of new version.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydep-recreate
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mydep-recreate
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mydep-recreate
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
