@@ -1,0 +1,20 @@
+# Kubernetes Job example
+# Job creates one or more pods to accomplish a particular task. Unlike long running services,
+# Job can be created for batch processes.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: myjob
+spec:
+  template:
+    metadata:
+      labels:
+        app: myjob
+    spec:
+      restartPolicy: OnFailure # can be OnFailure, Never, Always
+      containers:
+        - image: busybox:latest
+          name: main
+          args:
+            - "sleep"
+            - "120"
