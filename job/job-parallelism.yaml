@@ -1,0 +1,21 @@
+# Kubernetes Job example with parallel execution
+# Multiple instaces of Job pod can be run at the same time to accomplish parallel tasks.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: myjobparallel
+spec:
+  completions: 5 # Run 5 jobs until completion
+  parallelism: 2 # 2 jobs can be parallel at a time
+  template:
+    metadata:
+      labels:
+        app: myjobparallel
+    spec:
+      restartPolicy: OnFailure # can be OnFailure, Never, Always
+      containers:
+        - image: busybox:latest
+          name: main
+          args:
+            - "sleep"
+            - "10"
