@@ -1,0 +1,23 @@
+# Kubernetes CronJob example
+# CronJob mimics the unix cronjob to perform scheduled actions such as periodic backups,
+# report generation, and so on.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mycronjob
+spec:
+  # cronjob "minutes, hours, dayofmonth, month, weekday"
+  #schedule: "0 0,12 * * 0" # Run at 00:00 AM and "12:00 PM" on Sundays
+  schedule: "* * * * *" # Run everyday every minute
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: mycronjob
+        spec:
+          restartPolicy: Never # can be OnFailure, Never, Always
+          containers:
+            - image: busybox
+              name: main
+              command: ['sh', '-c', 'echo The app is running! && sleep 60 && echo Completed']
