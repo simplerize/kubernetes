@@ -1,0 +1,37 @@
+# Kubernetes ConfigMap example
+# ConfigMap object is designed to store application configurations that are non sentitive.
+# Pods can consume them as environment variables, command line arguments, or volumes.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mycfgmap
+data:
+  bindHost: "0.0.0.0"
+  bindPort: "3456"
+  
+  # file like keys
+  db.config: |
+    host=mydb.svc.local
+    port=3457
+
+---
+
+# Kubernetes Pod example that uses specific keys in a ConfigMap as environment variables
+# kubectl apply -f configmap-key-as-env.yaml
+# kubectl exec -it mypod env # to check if the env is available inside the pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+  labels:
+    app: mypod
+spec:
+  containers:
+    - image: nginx:latest
+      name: main
+      env:
+        - name: BIND_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mycfgmap
+              key: bindPort
