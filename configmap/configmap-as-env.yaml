@@ -8,11 +8,6 @@ metadata:
 data:
   bindHost: "0.0.0.0"
   bindPort: "3456"
-  
-  # file like keys
-  db.config: |
-    host=mydb.svc.local
-    port=3457
 
 ---
 
@@ -29,14 +24,7 @@ spec:
   containers:
     - image: nginx:latest
       name: main
-      env:
-        - name: BIND_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: mycfgmap
-              key: bindHost
-        - name: BIND_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: mycfgmap
-              key: bindPort
+      envFrom:
+        - configMapRef:
+            name: mycfgmap
+          prefix: "CFG_"
