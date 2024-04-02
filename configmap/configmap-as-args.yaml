@@ -1,6 +1,7 @@
 # Kubernetes ConfigMap example
 # ConfigMap object is designed to store application configurations that are non sentitive.
 # Pods can consume them as environment variables, command line arguments, or volumes.
+# CLI to apply this configuration: kubectl apply -f configmap-as-args.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13,7 +14,7 @@ data:
 
 # Kubernetes Pod example that uses ConfigMap as command line arguments.
 # Firstly, we need to pass the configmap as environment variables and access them in arguments.
-# kubectl apply -f configmap-as-args.yaml
+# CLI to verify the command line arguments: kubectl logs mypod-with-cfgmap-arg
 apiVersion: v1
 kind: Pod
 metadata:
