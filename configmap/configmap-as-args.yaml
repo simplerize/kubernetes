@@ -1,0 +1,32 @@
+# Kubernetes ConfigMap example
+# ConfigMap object is designed to store application configurations that are non sentitive.
+# Pods can consume them as environment variables, command line arguments, or volumes.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mycfgmap
+data:
+  bindHost: "0.0.0.0"
+  bindPort: "3456"
+
+---
+
+# Kubernetes Pod example that uses ConfigMap as command line arguments.
+# Firstly, we need to pass the configmap as environment variables and access them in arguments.
+# kubectl apply -f configmap-as-args.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+  labels:
+    app: mypod
+spec:
+  containers:
+    - image: busybox
+      name: main
+      envFrom:
+        - prefix: "CFG_"
+          configMapRef:
+            name: mycfgmap
+      command: ["/bin/sh"] # busybox entrypoint
+      args: ["-c", "while true; do echo $(CFG_bindHost); echo $(CFG_bindPort); sleep 10; done"] # args to entrypoint
