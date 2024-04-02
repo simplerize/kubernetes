@@ -1,6 +1,10 @@
 # Kubernetes ConfigMap example
 # ConfigMap object is designed to store application configurations that are non sentitive.
 # Pods can consume them as environment variables, command line arguments, or volumes.
+# ConfigMap can be created with this YAML manifest
+#   kubectl apply -f configmap.yaml
+# Alternatevely, you can create configmaps from your config files, directories, or even string literals.
+#   kubectl create configmap testcfg --from-file=mycfg-dir/ --from-file=mycfg.json --from-file=mycfgparam=my-sshkey.conf  --from-literal=mycfgparam2=val
 apiVersion: v1
 kind: ConfigMap
 metadata:
