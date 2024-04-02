@@ -17,9 +17,9 @@ data:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: mypod
+  name: mypod-with-cfgmap-arg
   labels:
-    app: mypod
+    app: mypod-with-cfgmap-arg
 spec:
   containers:
     - image: busybox
