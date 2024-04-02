@@ -1,0 +1,36 @@
+# Kubernetes ConfigMap example
+# ConfigMap object is designed to store application configurations that are non sentitive.
+# Pods can consume them as environment variables, command line arguments, or volumes.
+# CLI to apply this configuration:
+#   kubectl apply -f configmap-as-volume.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mycfgmap
+data:
+  bindHost: "0.0.0.0"
+  bindPort: "3456"
+
+---
+
+# Kubernetes Pod example that uses ConfigMap as volume
+# CLI to check the mounted volume:
+#   kubectl exec -it mypod-with-cfgmap-vol -- ls /etc/mycfg
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod-with-cfgmap-vol
+  labels:
+    app: mypod-with-cfgmap-vol
+spec:
+  containers:
+    - image: nginx
+      name: main
+      volumeMounts:
+        - name: mycfg
+          mountPath: /etc/mycfg
+          readOnly: true
+  volumes:
+    - name: mycfg
+      configMap:
+        name: mycfgmap
