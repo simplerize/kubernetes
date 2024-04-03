@@ -1,0 +1,69 @@
+# Kubernetes StatefulSet example
+# StatefulSet is required to run stateful applications such as Database in Kubernetes.
+# - Provides a ordinal index for its pods rather than a random hash (say mydb-0, mydb-1, ...)
+# kubectl apply -f statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mydb
+spec:
+  replicas: 3
+  serviceName: mydbsvc
+  selector:
+    matchLabels:
+      app: mydb
+  template:
+    metadata:
+      labels:
+        app: mydb
+    spec:
+      containers:
+        - image: mysql:latest
+          name: main
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mydbvol
+              mountPath: /var/lib/mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mydbsecret
+                  key: MYSQL_ROOT_PASSWORD
+  volumeClaimTemplates:
+    - metadata:
+        name: mydbvol
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        #storageClassName: "" # force to use manually created PV, not to use default storage class provisioner
+        resources:
+          requests:
+            storage: 100Mi
+
+---
+
+# Create a Kubernetes Secret object to store mysql password
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mydbsecret
+type: opaque
+stringData:
+  MYSQL_ROOT_PASSWORD: mysqlpwd
+
+---
+
+# A headless service for StatefulSet to provide the stable network identity like
+# podname.servicename.namespace.svc.cluster.local.
+# Example: mydb-0.mydbsvc.default.svc.cluster.local
+apiVersion: v1
+kind: Service
+metadata:
+  name: mydbsvc
+spec:
+  selector:
+    app: mydb
+  clusterIP: None
+  ports:
+  - port: 3306
