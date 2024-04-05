@@ -1,0 +1,15 @@
+# Kubernetes Service example to create an alias for external service
+# - A service can be created as an alias to the external service with a FQDN.
+# - This can be used to hide using the original service FQDN and later modify
+#   only the service spec to migrate/test with new service.
+# CLI to create a service alias:
+#   kubectl apply -f externalname.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myaliassvc
+spec:
+  type: ExternalName
+  externalName: myexternal.domain.com # provide your actual service FQDN
+  ports:
+  - port: 80
