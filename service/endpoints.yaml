@@ -1,0 +1,31 @@
+# Kubernetes endpoints example to route to services running outside the cluster.
+# - Kubernetes service is a general abstration, and it can even route the requests to even
+#   services running outside the cluster.
+# - Every kubernetes service is mapped to set of endpoints. So we can configure our own
+#   endpoints for the service without using pod selectors.
+# CLI to create a service which can route to IPs outside the cluster:
+#   kubectl apply -f endpoints.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myremotesvc
+spec:
+  ports:
+  - name: http
+    port: 8080         # service port
+    targetPort: 80     # route to this container port
+
+---
+
+# Kubernetes Endpoints associated with the Service
+# Request to service myremotesvc is routed any one of the addresses specified here
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: myremotesvc # must match the service name to assoicate with
+subsets:
+- addresses:
+  - ip: 10.10.10.10
+  - ip: 11.11.11.11
+  ports:
+  - port: 80
