@@ -1,0 +1,46 @@
+# Kubernetes headless service example
+# A headless service is just a DNS name that returns list of pod IPs.
+# - The order of pod IPs is changed for every lookup to route requests to different pods.
+# - There won't be any ClusterIP assigned for the service and the communication goes directly to the pod IP.
+# - DNS lookup returns all the assoicated pod's IPs. So, the client can decide where to send the traffic.
+# - Headless service can also be used directly which works in round robin as per DNS lookup.
+# CLI to create and verify headless service:
+#   kubectl apply -f headless.yaml
+#   kubectl run busybox --rm --restart Never -it --image=tutum/dnsutils
+#   root@busybox:/# nslookup myheadlesssvc
+apiVersion: v1
+kind: Service
+metadata:
+  name: myheadlesssvc
+spec:
+  selector:
+    app: mydep # Route requests to pods that has this label app=mydep
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8080         # service port
+    targetPort: 80     # route to this container port
+
+---
+
+# Kubernetes Deployment associated with the Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mydep
+  template:
+    metadata:
+      labels:
+        app: mydep
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # informational purpose only
+            - containerPort: 80
+              protocol: TCP
