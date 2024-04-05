@@ -1,0 +1,42 @@
+# Kubernetes Service example
+# kubectl apply -f service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysvc
+spec:
+  selector:
+    app: mydep # Route requests to pods that has this label app=mydep
+  sessionAffinity: ClientIP # Default 'None' or use 'ClientIP' to route requests from the same client to the same pod
+  ports:
+  - name: http
+    port: 8080         # service port
+    targetPort: 80     # route to this container port
+  - name: https
+    port: 4443         # service port
+    targetPort: 443    # route to this container port
+
+---
+
+# Kubernetes Deployment associated with the Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mydep
+  template:
+    metadata:
+      labels:
+        app: mydep
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports: # information purpose only
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
