@@ -1,6 +1,8 @@
 # Kubernetes Ingress example with TLS support
 # - Ingress work at HTTP level (layer 7) and routes the HTTP traffic on single IP to one or more services.
 # - We need to deploy an ingress controller on kubernetes cluster in order to accept and route the requests.
+# - The TLS connection can be between client and the ingress controller.
+# - Communication between ingress controller and your web server can be plain HTTP as it is internal.
 # CLI to deploy Ingress NGINX controller
 #   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 #   kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s
