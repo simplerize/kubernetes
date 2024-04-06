@@ -1,0 +1,43 @@
+# Kubernetes NodePort Service example to allow external traffic
+# - All the cluster nodes can receive the external traffic on the specific port (called NodePort)
+#   and routed to service
+# - The service then routes the request any pod irrespective where the request is sent.
+# CLI to create a service:
+#   kubectl apply -f nodeport.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mynodeportsvc
+spec:
+  type: NodePort
+  selector:
+    app: mydep
+  ports:
+  - port: 8080      # exposes the K8s service on this port within the cluster
+    targetPort: 80  # target port to send the traffic within the container
+    nodePort: 30003 # Optional (default: 30000-32767) # expose the service to outside the cluster with node ip : node port
+    protocol: TCP
+
+---
+
+# Kubernetes Deployment associated with the Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mydep
+  template:
+    metadata:
+      labels:
+        app: mydep
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports:
+            - containerPort: 80
+              protocol: TCP
