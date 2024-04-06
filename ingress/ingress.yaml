@@ -1,0 +1,63 @@
+# Kubernetes Ingress example
+# - Ingress work at HTTP level (layer 7) and routes the HTTP traffic on single IP to one or more services.
+# - We need to deploy an ingress controller on kubernetes cluster in order to accept and route the requests.
+# CLI to deploy Ingress NGINX controller
+#   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+#   kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s
+#   kubectl get po --all-namespaces
+# CLI to create ingress:
+#   kubectl apply -f ingress.yaml 
+apiVersion: v1
+kind: Service
+metadata:
+  name: myingresssvc
+spec:
+  selector:
+    app: mydep
+  ports:
+  - port: 8080      # exposes the K8s service on this port within the cluster
+    targetPort: 80  # target port to send the traffic within the container
+
+---
+
+# Kubernetes Deployment associated with the Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mydep
+  template:
+    metadata:
+      labels:
+        app: mydep
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports:
+            - containerPort: 80
+              protocol: TCP
+
+---
+
+# Kubernetes Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myingress
+spec:
+  rules:
+  - host: mydomain.com # configure your DNS or /etc/hosts with the IP allocated for Ingress
+    http:
+      paths:
+        - path: "/"
+          pathType: Prefix
+          backend:
+            service:
+              name: myingresssvc
+              port:
+                number: 80
