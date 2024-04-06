@@ -1,0 +1,46 @@
+# Kubernetes LoadBalancer Service example
+# - LoadBalancer service is a layer on top of NodePort service. Client connect to a dedicated external
+#   load balancer IP and distribute the traffic to nodes through NodePort service.
+# - This type of LoadBalancer is available only when we run the cluster on cloud providers such as GCP and AWS.
+#   Otherwise, it acts like a NodePort service in local cluster. You may try on premises load balancer like MetalLB.
+# CLI to create a service:
+#   kubectl apply -f loadbalancer.yaml
+#   kubectl get svc myloadbalancersvc
+# Note: An external ip assigned only on cloud environment to access the service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: myloadbalancersvc
+spec:
+  type: LoadBalancer
+  selector:
+    app: mydep
+  ports:
+  - port: 8080      # exposes the K8s service on this port within the cluster
+    targetPort: 80  # target port to send the traffic within the container
+    nodePort: 30004 # Optional (default: 30000-32767) # expose the service to outside the cluster with node ip : node port
+    protocol: TCP
+
+---
+
+# Kubernetes Deployment associated with the Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mydep
+  template:
+    metadata:
+      labels:
+        app: mydep
+    spec:
+      containers:
+        - image: nginx:latest
+          name: main
+          ports:
+            - containerPort: 80
+              protocol: TCP
