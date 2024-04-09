@@ -1,0 +1,32 @@
+# Kubernetes example for host path Volume
+# - A hostPath volume points to specific dir/file in the node. Pods running on the
+#   "same node" can communicate through hostPath volume.
+# - Generally, pods should not use hostpath volumes, but some node level services
+#   requires access to files present in the node.
+# CLI to create and use hostpath volume
+#   kubectl apply -f hostpath.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mydaemon-hostvol
+spec:
+  selector:
+    matchLabels:
+      app: mydaemon-hostvol
+  template:
+    metadata:
+      labels:
+        app: mydaemon-hostvol
+    spec:
+      containers:
+      - name: main
+        image: nginx:alpine
+        volumeMounts:
+        - name: vollogs
+          mountPath: /var/log/nginx # mount path inside container
+          readOnly: false
+      volumes:
+      - name: vollogs
+        hostPath:
+          path: /var/log/nginx # ensure that the host path exists in all the nodes
+          type: Directory
