@@ -1,0 +1,96 @@
+# Kubernetes PersistenVolume and PersistentVolumeClaim example
+# - PersistenVolume (PV) is a cluster level resource. Cluster admin provision the storage as PV
+#   for applications use.
+# - PersistentVolumeClaim (PVC) is a namespaced resource. Developers don't worry about storage
+#   provisioning and simply create PVC with the space required for their application.
+# - Kubernetes satisfies the persistent volume claims from the persistent volumes provisioned.
+# - CLI:
+#     kubectl apply -f persistentvolume.yaml
+#     kubectl get pvc mypvc
+#     kubectl get pv mypv
+# Sample pod claiming for storage using PVC
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod-withpvc
+spec:
+  containers:
+  - name: main
+    image: mongo
+    volumeMounts:
+    - name: myvol
+      mountPath: /data/db
+    ports:
+    - containerPort: 27017
+      protocol: TCP
+  volumes:
+  - name: myvol
+    persistentVolumeClaim:
+      claimName: mypvc
+
+---
+
+# PersistentVolumeClaim requesting for application storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+  - ReadWriteOnce  # Allow read-write on single client
+  storageClassName: "" # force to use manually created PV, not to use default storage class provisioner
+
+---
+
+# PersistentVolume generally provisioned by cluster admin
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mypv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+  - ReadWriteOnce   # Allow read-write access from single client
+  - ReadOnlyMany    # Allow read-only access from many clients
+  persistentVolumeReclaimPolicy: Retain # Retain the data even if PV is released from claim
+  hostPath:         # Provision PV from host path
+    path: /mnt      # Path to store DB files
+    type: Directory # type of path
+
+---
+
+# Multiple PersistentVolume can also be defined as a list like the below
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: pv-0
+    spec:
+      capacity:
+        storage: 1Mi
+      accessModes:
+        - ReadWriteOnce   # Allow read-write access from single client
+      persistentVolumeReclaimPolicy: Recycle
+      hostPath:
+        path: /data/k8s/pv-0   # Path to store DB files
+        type: Directory   # type of path
+
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: pv-1
+    spec:
+      capacity:
+        storage: 1Mi
+      accessModes:
+        - ReadWriteOnce   # Allow read-write access from single client
+      persistentVolumeReclaimPolicy: Recycle
+      hostPath:
+        path: /data/k8s/pv-1   # Path to store DB files
+        type: Directory   # type of path
