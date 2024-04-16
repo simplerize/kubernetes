@@ -6,13 +6,13 @@
 # - Kubernetes satisfies the persistent volume claims from the persistent volumes provisioned.
 # - CLI:
 #     kubectl apply -f persistentvolume.yaml
-#     kubectl get pvc mypvc
+#     kubectl get pvc mypvc-manualpv
 #     kubectl get pv mypv
 # Sample pod claiming for storage using PVC
 apiVersion: v1
 kind: Pod
 metadata:
-  name: mypod-withpvc
+  name: mypod-withpv
 spec:
   containers:
   - name: main
@@ -26,7 +26,7 @@ spec:
   volumes:
   - name: myvol
     persistentVolumeClaim:
-      claimName: mypvc
+      claimName: mypvc-manualpv
 
 ---
 
@@ -34,7 +34,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mypvc
+  name: mypvc-manualpv
 spec:
   resources:
     requests:
