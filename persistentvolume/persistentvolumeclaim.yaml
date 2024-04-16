@@ -1,0 +1,45 @@
+# Kubernetes PersistentVolumeClaim example by auto provisioning persistent volumes
+# from default storage class.
+# - PersistentVolumeClaim (PVC) is a namespaced resource. Developers don't worry about storage
+#   provisioning and simply create PVC with the space required for their application.
+# - Kubernetes satisfies the persistent volume claims by allocating a persistem volume
+# - PersistentVolume can be either be manually created or automatically provisioned by Kubernetes
+# - Kubernetes provisions storage from the default storage class configured
+# - CLI:
+#     kubectl apply -f persistentvolumecliam.yaml
+#     kubectl get pvc mypvc
+#     kubectl get pv
+#     kubectl get storageclass
+# Sample pod claiming for storage using PVC
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod-withpvc
+spec:
+  containers:
+  - name: main
+    image: mongo
+    volumeMounts:
+    - name: myvol
+      mountPath: /data/db
+    ports:
+    - containerPort: 27017
+      protocol: TCP
+  volumes:
+  - name: myvol
+    persistentVolumeClaim:
+      claimName: mypvc
+
+---
+
+# PersistentVolumeClaim requesting for application storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+  - ReadWriteOnce  # Allow read-write on single client
