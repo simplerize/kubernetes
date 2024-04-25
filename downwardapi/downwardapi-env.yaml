@@ -1,0 +1,41 @@
+# Kubernetes downward API example
+# Don't get confused by the name Downward API. This isn't like a REST API endpoint.
+# Downward API allows to pass the applications metadata to applications through
+# environment variables and volumes.
+# Commands:
+#   kubectl apply -f downwardapi-env.yaml
+#   kubectl exec mypod-downwardapi-env -- env
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod-downwardapi-env
+spec:
+  containers:
+  - name: main
+    image: nginx:latest
+    resources:
+      requests: # Schedule on a node with this minimum requirement
+        cpu: 500m # 500m millicore (0.5 core)
+        memory: 50Mi # bytes by default, 1k - kilobyte, 1Ki - kibibyte, 1m, 1Mi. and so on,
+      limits: # Max restriction
+        cpu: 1 # 1 core = 1000m
+        memory: 100Mi
+    env:
+      - name: POD_NAME # Supply pod name as env
+        valueFrom:
+          fieldRef:
+              fieldPath: metadata.name
+      - name: POD_IP # Supply pod IP as env
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
+      - name: CONTAINER_CPU_REQUEST_MILLICORES # Supply minimum CPU request as env
+        valueFrom:
+          resourceFieldRef:  # use resourceFieldRef with divisor for resources
+            resource: requests.cpu
+            divisor: 1m
+      - name: CONTAINER_MEMORY_LIMIT_KIBIBYTES # Supply max memory requirement as env
+        valueFrom:
+          resourceFieldRef:
+            resource: limits.memory
+            divisor: 1Ki
