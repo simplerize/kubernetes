@@ -1,4 +1,4 @@
-# Kubernetes downward API example
+# Kubernetes downward API example to supply pod metadata/resource details as environment variables
 # Don't get confused by the name Downward API. This isn't like a REST API endpoint.
 # Downward API allows to pass the applications metadata to applications through
 # environment variables and volumes.
