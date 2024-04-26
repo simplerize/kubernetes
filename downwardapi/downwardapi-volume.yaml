@@ -1,0 +1,58 @@
+# Kubernetes downward API example to supply pod metadata/resource details as volume.
+# Don't get confused by the name Downward API. This isn't like a REST API endpoint.
+# Downward API allows to pass the applications metadata to applications through
+# environment variables and volumes.
+# Commands:
+#   kubectl apply -f downwardapi-volume.yaml
+#   kubectl exec mypod-downwardapi-vol -- ls -l /etc/downward
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod-downwardapi-vol
+  labels:
+    app: downwardapi-vol
+  annotations:
+    version: v10
+    description: |
+        A demo application to demonstrate the
+        downward API volume
+spec:
+  containers:
+  - name: main
+    image: nginx:latest
+    resources:
+      requests: # Schedule on a node with this minimum requirement
+        cpu: 500m # 500m millicore (0.5 core)
+        memory: 50Mi # bytes by default, 1k - kilobyte, 1Ki - kibibyte, 1m, 1Mi. and so on,
+      limits: # Max restriction
+        cpu: 1 # 1 core = 1000m
+        memory: 100Mi
+    volumeMounts:
+      - name: downward
+        mountPath: /etc/downward
+  volumes:
+  - name: downward
+    downwardAPI:
+      items:
+        - path: "podName"
+          fieldRef:
+            fieldPath: metadata.name
+        # - path: "podIp" # not working: https://github.com/kubernetes/kubernetes/issues/64168
+        #   fieldRef:
+        #     fieldPath: status.podIP
+        - path: "labels"
+          fieldRef:
+            fieldPath: metadata.labels
+        - path: "annotations"
+          fieldRef:
+            fieldPath: metadata.annotations
+        - path: "containerCpuRequestMillicores"
+          resourceFieldRef:  # use resourceFieldRef with divisor for resources
+            containerName: main # specify container name for resource fields since they are specific to containers
+            resource: requests.cpu
+            divisor: 1m
+        - path: "containerMemoryLimitKibibytes"
+          resourceFieldRef:
+            containerName: main
+            resource: limits.memory
+            divisor: 1Ki
